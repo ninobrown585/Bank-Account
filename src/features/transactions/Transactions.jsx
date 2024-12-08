@@ -1,14 +1,17 @@
 import { useState } from "react";
 
-import { transfer } from "./transactionsSlice";
+import { transfer, withdrawal, deposit, selectBalance } from "./transactionsSlice";
+import { useSelector, useDispatch } from "react-redux";
 import "./transactions.scss";
 
 /**
  * Allows users to deposit to, withdraw from, and transfer money from their account.
  */
 export default function Transactions() {
+  
+  const dispatch = useDispatch();
   // TODO: Get the balance from the Redux store using the useSelector hook
-  const balance = 0;
+  const balance = useSelector(selectBalance);
 
   const [amountStr, setAmountStr] = useState("0.00");
   const [recipient, setRecipient] = useState("");
@@ -16,14 +19,27 @@ export default function Transactions() {
   /** Dispatches a transaction action based on the form submission. */
   const onTransaction = (e) => {
     e.preventDefault();
-
+    
     // This changes depending on which button the user clicked to submit the form.
     // It will be either "deposit", "withdraw", or "transfer".
     const action = e.nativeEvent.submitter.name;
+    console.log(action)
 
-    const amount = +amountStr;
+    const amount =+ parseFloat(amountStr);
+    console.log(amount)
 
     // TODO: Dispatch the appropriate transaction action based on `action`
+    if (action === "deposit") {
+      
+      // The `deposit` action is dispatched with a payload containing
+      // the amount and the recipient.
+      dispatch(deposit({ amount }));
+    }
+    if (action === "withdrawal") {
+      // The `withdrawal` action is dispatched with a payload containing
+      // the amount and the recipient.
+      dispatch(withdrawal({ amount }));
+    }
     if (action === "transfer") {
       // The `transfer` action is dispatched with a payload containing
       // the amount and the recipient.
@@ -52,10 +68,10 @@ export default function Transactions() {
             />
           </label>
           <div>
-            <button default name="deposit">
+            <button name="deposit">
               Deposit
             </button>
-            <button name="withdraw">Withdraw</button>
+            <button name="withdrawal">Withdraw</button>
           </div>
         </div>
         <div className="form-row">
